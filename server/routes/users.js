@@ -15,30 +15,27 @@ router.get('/', (req, res) => {
 router.get('/:id', (req, res) => {
     User
         .findById(req.params.id)
-        .then( (user) => {
-            res.send(user);
+        .then( user => {
+            if(user === null)
+                res.status(404).send('no user found');
+            else
+                res.status(200).json(user)
         })
-        .catch( (error) => {
-            res.send('User could not be found');
-        });
 });
 
 // create a user
 router.post('/', (req, res) => {
-    const user = new User({
-        firstName: req.body.fName,
-        lastName : req.body.lName,
+    let user = new User({
+        firstName: req.body.firstName,
+        lastName : req.body.lastName,
         email    : req.body.email,
-        // need to figure out social later
+        social   :  req.body.social,
+        blogs    : []
     });
 
     user.save()
         .then( () => {
-            res.send('user added')
-        })
-        .catch(error => {
-            console.log(error);
-            res.send('Error adding user')
+            res.status(201).json(user);
         });
 });
 
@@ -47,11 +44,10 @@ router.put('/:id', (req, res) => {
     User
         .findByIdAndUpdate(req.params.id, req.body)
         .then( () => {
-            res.send('user has been added')
+            res.status(204).send('user has been added')
         })
         .catch( (error) => {
-            console.log(error);
-            res.send('Error adding user');
+            res.status(404).send('Error adding user');
         });
 });
 
@@ -63,8 +59,7 @@ router.delete('/:id', (req, res) => {
             res.send('user has been removed');
         })
         .catch(error => {
-            console.log(error);
-            res.send('Error removing user');
+            res.status(404).send('Error removing user');
         });
 });
 
