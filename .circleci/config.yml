@@ -1,0 +1,30 @@
+version: 2.1
+
+orbs:
+  node: circleci/node@5.0.2
+  heroku: circleci/heroku@1.2.6
+
+jobs:
+  build:
+    docker:
+      - image: cimg/node:16.14.2
+    steps:
+      - checkout
+      - node/install:
+        node-version: '16.14.2'
+      - node/install-packages
+  deploy:
+    docker:
+      - image: cimg/node:16.14.2
+    steps:
+      - heroku/deploy-via-git:
+          api-key: f1d640b0-8611-431f-af9a-214b98624962
+          app-name: blog-api-3
+          branch: main
+
+workflow:
+  version: 2.1
+  build_deploy:
+    jobs:
+      - build
+      - deploy
